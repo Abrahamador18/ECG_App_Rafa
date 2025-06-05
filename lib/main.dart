@@ -143,7 +143,7 @@ class _ECGScreenState extends State<ECGScreen> {
                           LineChartBarData(
                             spots: displayedData,
                             isCurved: false,
-                            color: Colors.greenAccent,
+                            color: Colors.redAccent,
                             barWidth: 2,
                           ),
                         ],
