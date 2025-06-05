@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.black,
-          foregroundColor: Colors.greenAccent,
+          foregroundColor: Colors.redAccent,
         ),
       ),
       home: const ECGScreen(),
@@ -34,7 +34,7 @@ class ECGScreen extends StatefulWidget {
   State<ECGScreen> createState() => _ECGScreenState();
 }
 
-class _ECGScreenState extends State<ECGScreen> {
+class _ECGScreenState extends State<ECGScreen> with SingleTickerProviderStateMixin {
   List<double> ecgData = [];
   List<FlSpot> displayedData = [];
   Timer? ecgTimer;
@@ -43,10 +43,22 @@ class _ECGScreenState extends State<ECGScreen> {
   int elapsedSeconds = 0;
   bool isRunning = false;
 
+  late AnimationController _heartController;
+  late Animation<double> _heartAnimation;
+
   @override
   void initState() {
     super.initState();
     loadEcgData();
+
+    _heartController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+
+    _heartAnimation = Tween<double>(begin: 0.9, end: 1.2).animate(
+      CurvedAnimation(parent: _heartController, curve: Curves.easeInOut),
+    );
   }
 
   Future<void> loadEcgData() async {
@@ -113,6 +125,7 @@ class _ECGScreenState extends State<ECGScreen> {
   void dispose() {
     ecgTimer?.cancel();
     timeTimer?.cancel();
+    _heartController.dispose();
     super.dispose();
   }
 
@@ -123,55 +136,71 @@ class _ECGScreenState extends State<ECGScreen> {
         title: const Text('Visualización de ECG'),
         centerTitle: true,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: displayedData.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Presiona "Start" para comenzar',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: LineChart(
-                      LineChartData(
-                        minY: displayedData.map((e) => e.y).reduce(min),
-                        maxY: displayedData.map((e) => e.y).reduce(max),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: displayedData,
-                            isCurved: false,
-                            color: Colors.redAccent,
-                            barWidth: 2,
+          Column(
+            children: [
+              Expanded(
+                child: displayedData.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'Presiona "Start" para comenzar',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: LineChart(
+                          LineChartData(
+                            minY: displayedData.map((e) => e.y).reduce(min),
+                            maxY: displayedData.map((e) => e.y).reduce(max),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: displayedData,
+                                isCurved: false,
+                                color: Colors.redAccent,
+                                barWidth: 2,
+                              ),
+                            ],
+                            titlesData: FlTitlesData(show: false),
+                            gridData: FlGridData(show: false),
+                            borderData: FlBorderData(show: false),
                           ),
-                        ],
-                        titlesData: FlTitlesData(show: false),
-                        gridData: FlGridData(show: false),
-                        borderData: FlBorderData(show: false),
+                        ),
                       ),
-                    ),
-                  ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Tiempo: $elapsedSeconds s',
+                style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: isRunning ? stopEcg : startEcg,
+                icon: Icon(isRunning ? Icons.stop : Icons.play_arrow),
+                label: Text(isRunning ? 'Stop' : 'Start'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            'Tiempo: $elapsedSeconds s',
-            style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            onPressed: isRunning ? stopEcg : startEcg,
-            icon: Icon(isRunning ? Icons.stop : Icons.play_arrow),
-            label: Text(isRunning ? 'Stop' : 'Start'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.greenAccent,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              textStyle: const TextStyle(fontSize: 18),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: ScaleTransition(
+              scale: _heartAnimation,
+              child: const Icon(
+                Icons.favorite,
+                color: Colors.red,
+                size: 32,
+              ),
             ),
           ),
-          const SizedBox(height: 30),
         ],
       ),
     );
