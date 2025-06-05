@@ -2,15 +2,11 @@
 
 A new Flutter project.
 
-## Getting Started
+## ECG Viewer APP
 
-This project is a starting point for a Flutter application.
+Esta aplicación móvil con Flutter simula y visualiza una señal fisiológica de ECG (electrocardiograma) utilizando datos reales desde un archivo CSV. La interfaz gráfica muestra el trazo del ECG en tiempo real, con una animación fluida y un corazón palpitando como indicador visual. Permite iniciar y detener la simulación mediante un botón interactivo, mostrando además el tiempo transcurrido durante la visualización.
 
-A few resources to get you started if this is your first Flutter project:
+Esta app es ideal para fines educativos, demostraciones o pruebas de visualización de señales biomédicas.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
