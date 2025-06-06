@@ -177,7 +177,7 @@ class _ECGScreenState extends State<ECGScreen> with SingleTickerProviderStateMix
               const SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: isRunning ? stopEcg : startEcg,
-                icon: Icon(isRunning ? Icons.stop : Icons.play_arrow),
+                icon: Icon(isRunning ? Icons.stop_circle : Icons.play_circle_fill),
                 label: Text(isRunning ? 'Stop' : 'Start'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
